@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload CSV</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .custom-border {
+            border: 2px solid #FF9800; /* Custom orange border color */
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .custom-file-input~.custom-file-label::after {
+            content: "Browse";
+            background-color: #17a2b8; /* Info color for button */
+            color: white;
+        }
+        .custom-file-input:focus~.custom-file-label {
+            border-color: #17a2b8; /* Focus border color */
+            box-shadow: 0 0 0 0.2rem rgba(23, 162, 184, 0.25);
+        }
+        .btn-trending {
+            background: linear-gradient(45deg, #ff6b6b, #f06595);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            transition: background 0.3s ease;
+        }
+        .btn-trending:hover {
+            background: linear-gradient(45deg, #f06595, #ff6b6b);
+        }
+        .floating-heading {
+            font-family: 'Arial', sans-serif;
+            font-size: 2.5rem;
+            color: #ff6b6b;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            position: relative;
+            animation: float 3s ease-in-out infinite;
+        }
+        .floating-heading img {
+            width: 50px;
+            height: 50px;
+            margin-left: 10px;
+        }
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+        .glitter {
+            position: relative;
+            overflow: hidden;
+        }
+        .glitter::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(130deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+            animation: glitter 3s infinite linear;
+        }
+        @keyframes glitter {
+            0% {
+                transform: translate(-100%, -100%) rotate(0deg);
+            }
+            100% {
+                transform: translate(100%, 100%) rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6 text-center">
+                <h1 class="mb-4 floating-heading">
+                    UPLOAD FILE
+                    <!-- <img src="https://twemoji.maxcdn.com/v/latest/72x72/1f603.png" alt="smiley"> -->
+                </h1>
+                <form action="{{ url_for('upload_file') }}" method="post" enctype="multipart/form-data" class="custom-border">
+                    <div class="form-group">
+                        <div class="custom-file">
+                            <input type="file" name="file" class="custom-file-input" id="customFile">
+                            <label class="custom-file-label" for="customFile">Choose file</label>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-trending" id="uploadBtn">Upload</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        $(".custom-file-input").on("change", function() {
+            var fileName = $(this).val().split("\\").pop();
+            $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+            $("#uploadBtn").addClass("glitter");
+        });
+
+
+        $("#uploadBtn").hover(
+            function() {
+                $(this).removeClass("glitter");
+            }, 
+            function() {
+                if ($(".custom-file-input").val()) {
+                    $(this).addClass("glitter");
+                }
+            }
+        );
+    </script>
+</body>
+</html>

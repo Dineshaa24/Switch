@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Result</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .downloadbtn {
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+        }
+        .btn-glitter {
+            background-image: linear-gradient(45deg, #ff6b6b, #f06595, #ff6b6b);
+            background-size: 200% 200%;
+            animation: glitter 2s linear infinite;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        @keyframes glitter {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+        .glitter-title {
+            background-image: linear-gradient(45deg, #742c2c, #ca4f59, #ec7e7e);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            animation: glitter 2s linear infinite;
+        }
+        th.glitter {
+            background-image: linear-gradient(45deg, #7ee2dd, #73beb4, #4e8fa8);
+            background-size: 200% 200%;
+            animation: mildGlitter 4s linear infinite;
+            color: white;
+            text-align: center;
+        }
+        @keyframes mildGlitter {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+        .highlight-header {
+            background-color: yellow !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="downloadbtn">
+            <button onclick="downloadCSV()" class="btn btn-glitter">Download File</button>
+        </div>
+        <h2 class="glitter-title">Summary</h2>
+        <table class="table table-bordered">
+            <thead class="thead-light">
+                <tr>
+                    <th class="glitter">Log Count</th>
+                    <th class="glitter">Total Cost</th>
+                    <th class="glitter">Total Minutes</th>
+                    <!-- <th class="glitter">Total Negative</th> -->
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ count }}</td>
+                    <td>{{ grand_total_cost }}</td>
+                    <td>{{ grand_total_min }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <h2 class="glitter-title">Toll Free and Non-Tollfree wise Minutes and Cost</h2>
+        <table class="table table-bordered">
+            <thead class="thead-light">
+                <tr>                  
+                    <th class="glitter">Log Count</th>
+                    <th class="glitter">Tariff</th>
+                    <th class="glitter">Minutes</th>
+                    <th class="glitter">Cost</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in new_df1 %}
+                <tr>
+                    <td>{{ item.count }}</td>
+                    <td>{{ item.tarriff }}</td>
+                    <td>{{ item.total_min2 }}</td>
+                    <td>{{ item.total_cost3 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <h2 class="glitter-title">Route wise Minutes and Cost</h2>
+        <table class="table table-bordered">
+            <thead class="thead-light">
+                <tr>
+                    <th class="glitter">Route</th>
+                    <th class="glitter">Minutes</th>
+                    <th class="glitter">Cost</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in new_df %}
+                <tr>
+                    <td>{{ item.Route1 }}</td>
+                    <td>{{ item.Total_min1 }}</td>
+                    <td>{{ item.total_cost }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <h2 class="glitter-title">Negative Balance</h2>
+        <table class="table table-bordered">
+            <thead class="thead-light">
+                <tr>
+                    <th class="glitter">Negative</th>
+                    <th class="glitter">Route</th>
+                    <th class="glitter">Login</th>
+                    <th class="glitter">Tariff Prefix</th>
+                    <th class="glitter">Tariff</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in tot %}
+                <tr>
+                    <td>{{ item.neg31 }}</td>
+                    <td>{{ item.route31 }}</td>
+                    <td>{{ item.Login31 }}</td>
+                    <td>{{ item.TariffPrefix31 }}</td>
+                    <td>{{ item.Tariff31 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>  
+    </div>
+
+    <script>
+        function downloadCSV() {
+            // Highlight headers
+            document.querySelectorAll('th.glitter').forEach(th => {
+                th.classList.add('highlight-header');
+            });
+
+            // Create CSV content
+            function tableToCSV(table) {
+                var csv = [];
+                var rows = table.querySelectorAll("tr");
+                
+                for (var i = 0; i < rows.length; i++) {
+                    var row = [], cols = rows[i].querySelectorAll("th, td");
+                    
+                    for (var j = 0; j < cols.length; j++) {
+                        row.push(cols[j].innerText);
+                    }
+                    
+                    csv.push(row.join(","));
+                }
+                
+                return csv.join("\n");
+            }
+
+            var tables = document.querySelectorAll("table");
+            var csvContent = [];
+
+            tables.forEach(table => {
+                csvContent.push(tableToCSV(table));
+                csvContent.push("\n\n");
+            });
+
+            var csvFile = new Blob([csvContent.join("")], { type: "text/csv" });
+
+            var downloadLink = document.createElement("a");
+            downloadLink.download = "table_data.csv";
+            downloadLink.href = window.URL.createObjectURL(csvFile);
+            downloadLink.style.display = "none";
+
+            document.body.appendChild(downloadLink);
+
+            downloadLink.click();
+
+            document.body.removeChild(downloadLink);
+            
+            // Remove highlight after download
+            document.querySelectorAll('th.glitter').forEach(th => {
+                th.classList.remove('highlight-header');
+            });
+        }
+    </script>
+</body>
+</html>

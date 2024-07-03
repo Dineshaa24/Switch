@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Result</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<style>
+    th {
+        background-color: #f0f0f0;
+        color: #000;
+    }
+    .downloadbtn{
+        margin-top: 15px;
+    margin-left: 118px;
+    }
+</style>
+<body>
+    <button onclick="downloadCSV()" class="downloadbtn">Download File</button>
+    <div class="container mt-4">
+        <h2>Summary</h2>
+        <table class="table table-bordered">
+            <tr>
+                <th style="background-color: #ffcccc;">Log Count</th>
+                <th style="background-color: #ffcccc;">Total Cost</th>
+                <th style="background-color: #ffcccc;">Total Minutes</th>
+                <th style="background-color: #ffcccc;">Total Negative</th>
+            </tr>
+            <tr>
+                <td>{{ count }}</td>
+                <td>{{ grand_total_cost }}</td>
+                <td>{{ grand_total_min }}</td>
+                <td>{{ grand_total_neg }}</td>
+            </tr>
+        </table>
+        <h2>Toll Free and Non-Tollfree wise Minutes and Cost</h2>
+        <table class="table table-bordered logintable" >
+            <tr>
+                <th style="background-color: #ccffcc;">Tariff</th>
+                <th style="background-color: #ccffcc;">Minutes</th>
+                <th style="background-color: #ccffcc;">Cost</th>
+            </tr>
+            {% for  item in new_df1 %}
+            <tr>
+                <td>{{ item.tarriff }}</td>
+                <td>{{ item.total_min2 }}</td>
+                <td>{{ item.total_cost3 }}</td>
+
+            </tr>
+            {% endfor %}
+        </table>
+        <h2>Route wise Minutes and Cost</h2>
+        <table class="table table-bordered logintable" >
+            <tr>
+                <th style="background-color: #ccccff;">Route</th>
+                <th style="background-color: #ccccff;">Minutes</th>
+                <th style="background-color: #ccccff;">Cost</th>
+            </tr>
+            {% for  item in new_df %}
+            <tr>
+                <td>{{ item.Route1 }}</td>
+                <td>{{ item.Total_min1 }}</td>
+                <td>{{ item.total_cost }}</td>
+
+            </tr>
+            {% endfor %}
+        </table>
+        <!-- <h2>Route Wise Negative Balance</h2>
+        <table class="table table-bordered logintable" >
+            <tr>
+                <th style="background-color: #ffccff;">Route</th>
+                <th style="background-color: #ffccff;">Negative Value</th>
+            </tr>
+            {% for  item in neg_route %}
+            <tr>
+                <td>{{ item.route3 }}</td>
+                <td>{{ item.neg1 }}</td>
+            </tr>
+            {% endfor %}
+        </table> -->
+        <h2>Negative Balance</h2>
+        <table class="table table-bordered logintable" >
+            <tr>
+                <th style="background-color: #ffccff;">Negative</th>
+                <th style="background-color: #ffccff;">Route</th>
+                <th style="background-color: #ffccff;">Login</th>
+                <th style="background-color: #ffccff;">Tarrif prefix</th>
+                <th style="background-color: #ffccff;">Tarrif</th>
+            </tr>
+            {% for  item in tot %}
+            <tr>
+                <td>{{ item.neg31 }}</td>
+                <td>{{ item.route31 }}</td>
+                <td>{{ item.Login31 }}</td>
+                <td>{{ item.TariffPrefix31 }}</td>
+                <td>{{ item.Tariff31 }}</td>
+            </tr>
+            {% endfor %}
+        </table> 
+        <!-- <h2>Login wise negative balance</h2>
+        <table class="table table-bordered logintable" >
+            <tr>
+                <th style="background-color: #ffffcc;">Login</th>
+                <th style="background-color: #ffffcc;">Negative Balance</th>
+            </tr>
+            {% for item in neg_login %}
+            {% set parts = item.split(' -') %}
+            <tr>
+                <td>{{ parts[0] }}</td>
+                <td>-{{ parts[1] }}</td>
+            </tr>
+        {% endfor %}
+        </table>
+        <h2>Tarrif wise negative balance</h2>
+        <table class="table table-bordered">
+            <tr>
+                <th style="background-color: #ffcc99;">Tariff</th>
+                <th style="background-color: #ffcc99;">Negative Balance</th>
+            </tr>
+            {% for item in neg_tarrif %}
+            {% set parts = item.split(' -') %}
+            <tr>
+                <td>{{ parts[0] }}</td>
+                <td>-{{ parts[1] }}</td>
+            </tr>
+        {% endfor %}
+        </table> -->   
+    </div>
+</body>
+<script>
+    function downloadCSV() {
+        function tableToCSV(table) {
+            var csv = [];
+            var rows = table.querySelectorAll("tr");
+            
+            for (var i = 0; i < rows.length; i++) {
+                var row = [], cols = rows[i].querySelectorAll("th, td");
+                
+                for (var j = 0; j < cols.length; j++) {
+                    row.push(cols[j].innerText);
+                }
+                
+                csv.push(row.join(","));
+            }
+            
+            return csv.join("\n");
+        }
+
+        var tables = document.querySelectorAll("table");
+        var csvContent = [];
+
+        tables.forEach(table => {
+            csvContent.push(tableToCSV(table));
+            csvContent.push("\n\n");
+        });
+
+        var csvFile = new Blob([csvContent.join("")], { type: "text/csv" });
+
+        var downloadLink = document.createElement("a");
+        downloadLink.download = "table_data.csv";
+        downloadLink.href = window.URL.createObjectURL(csvFile);
+        downloadLink.style.display = "none";
+
+        document.body.appendChild(downloadLink);
+
+
+        downloadLink.click();
+
+        document.body.removeChild(downloadLink);
+    }
+</script>
+</html>
